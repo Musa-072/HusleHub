@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Find B2B Partners · Hustle Hub</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Leaflet CSS via unpkg CDN -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin=""/>
+  
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/supplier.css">
+</head>
+<body class="customer">
+  <header class="site-header">
+    <a class="brand" href="index.html"><span class="brand-mark" aria-hidden="true"></span>Hustle Hub</a>
+    <nav aria-label="Main">
+      <a href="business.html" class="btn btn-ghost btn-sm">Back to Dashboard</a>
+    </nav>
+  </header>
+
+  <main class="container">
+    <section class="finder">
+      <h1>Grow your supply chain.</h1>
+
+      <!-- Section Toggle: Wholesalers vs Delivery -->
+      <div class="tabs" role="tablist" style="margin-top: 2rem; justify-content: flex-start; border-bottom: none;">
+        <button class="tab" role="tab" id="tabWholesaler" aria-selected="true" style="font-size: 1.1rem;">Wholesalers & Suppliers</button>
+        <button class="tab" role="tab" id="tabDelivery" aria-selected="false" style="font-size: 1.1rem;">Delivery & Logistics</button>
+      </div>
+
+      <div class="loc-box" style="margin-top: 1rem;">
+        <p id="locStatus" class="loc-status" aria-live="polite">📍 Location not set.</p>
+        <div class="loc-actions">
+          <button id="btnLocate" type="button" class="btn btn-primary">Use my current location</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Dynamic Categories Injected Here -->
+    <section aria-labelledby="catHeading">
+      <h2 id="catHeading" class="sr-only">Supplier Categories</h2>
+      <div id="supplierCategories" class="tiles"></div>
+    </section>
+
+    <section class="toolbar" aria-label="Search options">
+      <div class="field">
+        <label for="search">Search by business or item</label>
+        <input id="search" type="search" placeholder="For example: bread, packaging, cold chain">
+      </div>
+      <div class="field field-small">
+        <label for="radius">Within</label>
+        <select id="radius">
+          <option value="5" selected>5 km</option>
+          <option value="10">10 km</option>
+          <option value="25">25 km</option>
+          <option value="50">50 km</option>
+        </select>
+      </div>
+    </section>
+
+    <section aria-live="polite">
+      <div class="results-head">
+        <h2 id="resultsTitle">Partner Matches</h2>
+        <span id="resultsCount" class="muted"></span>
+      </div>
+      
+      <!-- Leaflet Map Placeholder -->
+      <div id="map" style="height: 350px; width: 100%; border-radius: 12px; border: 2px solid var(--black); margin-bottom: 2rem; z-index: 1;"></div>
+
+      <!-- Dynamic Cards Injected Here -->
+      <div id="results" class="cards"></div>
+    </section>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <!-- Leaflet JS via unpkg CDN -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+  <script src="js/supplier.js"></script>
+</body>
+</html>

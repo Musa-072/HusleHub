@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>List your business · Corner Market</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/network.css">
+</head>
+<body class="business">
+  <header class="site-header">
+    <a class="brand" href="index.html"><span class="brand-mark" aria-hidden="true"></span>Hustle Hub</a>
+    <nav aria-label="Main">
+      <a href="index.html">Home</a>
+      <a href="customer.html" class="btn btn-ghost btn-sm">I'm a customer</a>
+    </nav>
+  </header>
+
+  <main class="container">
+
+    <!-- ============ Sign up / log in ============ -->
+    <section id="authView" class="auth">
+      <div class="auth-intro">
+        <h1>Get your business found by people nearby.</h1>
+        <p class="lead">Free to list. Set up in about five minutes. Customers can call, WhatsApp or get directions straight from your profile.</p>
+        <ul class="perks">
+          <li>Appear when people near you search your category</li>
+          <li>Publish promotions to attract new customers</li>
+          <li>Get tailored advice from your business advisor</li>
+        </ul>
+      </div>
+
+      <div class="auth-card">
+        <div class="auth-tabs" role="tablist">
+          <button type="button" class="auth-tab" data-form="register" role="tab" aria-selected="true">Create account</button>
+          <button type="button" class="auth-tab" data-form="login" role="tab" aria-selected="false">Log in</button>
+        </div>
+
+        <form id="registerForm" class="form">
+          <div class="field">
+            <label for="regBiz">Business name</label>
+            <input id="regBiz" name="name" required maxlength="60" placeholder="For example: Mama Thandi's Kitchen">
+          </div>
+          <div class="field">
+            <label for="regCat">What do you sell or do?</label>
+            <select id="regCat" name="category" data-categories></select>
+          </div>
+          <div class="field">
+            <label for="regOwner">Your name</label>
+            <input id="regOwner" name="ownerName" required maxlength="60" autocomplete="name">
+          </div>
+          <div class="field">
+            <label for="regEmail">Email</label>
+            <input id="regEmail" name="email" type="email" required autocomplete="email">
+          </div>
+          <div class="field">
+            <label for="regPw">Password</label>
+            <input id="regPw" name="password" type="password" required minlength="6" autocomplete="new-password">
+            <small>At least 6 characters.</small>
+          </div>
+          <button type="submit" class="btn btn-accent btn-lg btn-block">Create my account</button>
+        </form>
+
+        <form id="loginForm" class="form" hidden>
+          <div class="field">
+            <label for="logEmail">Email</label>
+            <input id="logEmail" name="email" type="email" required autocomplete="email">
+          </div>
+          <div class="field">
+            <label for="logPw">Password</label>
+            <input id="logPw" name="password" type="password" required autocomplete="current-password">
+          </div>
+          <button type="submit" class="btn btn-accent btn-lg btn-block">Log in</button>
+        </form>
+      </div>
+    </section>
+
+    <!-- ============ Dashboard ============ -->
+    <section id="dashView" hidden>
+      <div class="dash-head">
+        <div>
+          <p class="muted small">Your business</p>
+          <h1 id="dashTitle"></h1>
+        </div>
+        <div class="dash-actions">
+          <a id="btnPreview" class="btn btn-ghost btn-sm" href="customer.html" target="_blank" rel="noopener" hidden>See what customers see</a>
+          <button id="btnLogout" type="button" class="btn btn-ghost btn-sm">Log out</button>
+        </div>
+      </div>
+
+      <div class="tabs" role="tablist" aria-label="Business sections">
+        <button class="tab" role="tab" data-tab="overview" aria-selected="true">Overview</button>
+        <button class="tab" role="tab" data-tab="profile" aria-selected="false">Profile and address</button>
+        <button class="tab" role="tab" data-tab="products" aria-selected="false">Products</button>
+        <button class="tab" role="tab" data-tab="promos" aria-selected="false">Promotions</button>
+        <button class="tab" role="tab" data-tab="advisor" aria-selected="false">Advisor</button>
+        <a href="supplier.html" class="tab" style="text-decoration: none;">Find Suppliers ↗</a>
+      </div>
+
+      <!-- Overview -->
+      <div id="panel-overview" class="panel">
+        <div id="visibility" class="notice notice-warn" hidden>
+          <strong>Customers can't find you yet.</strong>
+          <span>Add your address so you show up in nearby searches.</span>
+          <button type="button" class="btn btn-accent btn-sm" data-goto="profile">Add address</button>
+        </div>
+
+        <div class="stats">
+          <div class="stat"><span id="statViews" class="stat-num">0</span><span class="stat-label">Profile views</span></div>
+          <div class="stat"><span id="statContacts" class="stat-num">0</span><span class="stat-label">Calls, chats and directions</span></div>
+          <div class="stat"><span id="statPromos" class="stat-num">0</span><span class="stat-label">Active promotions</span></div>
+        </div>
+
+        <div class="grid-2">
+          <section class="box">
+            <h2>Profile strength</h2>
+            <div class="meter-row">
+              <div id="meter" class="meter" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-label="Profile strength">
+                <div id="meterFill" class="meter-fill"></div>
+              </div>
+              <strong id="meterScore">0%</strong>
+            </div>
+            <ul id="missingList" class="todo"></ul>
+            <button type="button" class="btn btn-ghost btn-sm" data-goto="advisor">Ask the advisor for help</button>
+          </section>
+
+          <section class="box">
+            <h2>Tell people you're here</h2>
+            <p class="muted">Send this message to your customers and community groups.</p>
+            <label class="sr-only" for="shareText">Message to share</label>
+            <textarea id="shareText" rows="5" readonly></textarea>
+            <div class="row">
+              <button id="btnCopyShare" type="button" class="btn btn-primary btn-sm">Copy message</button>
+              <button id="btnWaShare" type="button" class="btn btn-whatsapp btn-sm">Share on WhatsApp</button>
+            </div>
+          </section>
+        </div>
+      </div>
+
+      <!-- Profile -->
+      <div id="panel-profile" class="panel" hidden>
+        <form id="profileForm" class="form box">
+          <h2>About your business</h2>
+          <div class="grid-2">
+            <div class="field">
+              <label for="pfName">Business name</label>
+              <input id="pfName" name="bizName" required maxlength="60">
+            </div>
+            <div class="field">
+              <label for="pfCat">Category</label>
+              <select id="pfCat" name="category" data-categories></select>
+            </div>
+          </div>
+          <div class="field">
+            <label for="pfDesc">Description</label>
+            <textarea id="pfDesc" name="description" rows="4" maxlength="300" placeholder="What do you sell or do, and what makes you different?"></textarea>
+            <small><span id="descCount">0</span> of 300 characters</small>
+          </div>
+          <div class="grid-2">
+            <div class="field">
+              <label for="pfPhone">Phone number</label>
+              <input id="pfPhone" name="phone" type="tel" placeholder="082 123 4567" autocomplete="tel">
+            </div>
+            <div class="field">
+              <label for="pfWa">WhatsApp number</label>
+              <input id="pfWa" name="whatsapp" type="tel" placeholder="Same as phone if blank">
+            </div>
+          </div>
+          <div class="field">
+            <label for="pfHours">Opening hours</label>
+            <input id="pfHours" name="hours" maxlength="80" placeholder="For example: Mon to Sat, 07:00 to 18:00">
+          </div>
+
+          <fieldset class="address">
+            <legend>Where customers can find you</legend>
+            <div class="field">
+              <label for="pfStreet">Street or landmark</label>
+              <input id="pfStreet" name="street" placeholder="For example: 12 Vilakazi Street, next to the taxi rank" autocomplete="address-line1">
+            </div>
+            <div class="grid-2">
+              <div class="field">
+                <label for="pfSuburb">Suburb or township</label>
+                <input id="pfSuburb" name="suburb" autocomplete="address-level3">
+              </div>
+              <div class="field">
+                <label for="pfCity">Town or city</label>
+                <input id="pfCity" name="city" autocomplete="address-level2">
+              </div>
+            </div>
+            <div class="row">
+              <button id="btnGeocode" type="button" class="btn btn-primary btn-sm">Find address on map</button>
+              <button id="btnGps" type="button" class="btn btn-ghost btn-sm">Use my current position</button>
+            </div>
+            <p id="locState" class="loc-state warn" aria-live="polite"></p>
+            <small>No street address? Stand at your business and use your current position.</small>
+          </fieldset>
+
+          <div class="field">
+            <span class="label">Photo</span>
+            <div class="photo-row">
+              <div id="photoPreview" class="photo-preview"></div>
+              <div>
+                <label class="btn btn-ghost btn-sm" for="photoInput">Choose a photo</label>
+                <input id="photoInput" type="file" accept="image/*" class="sr-only">
+                <button id="btnRemovePhoto" type="button" class="link-btn" hidden>Remove photo</button>
+              </div>
+            </div>
+          </div>
+
+          <button type="submit" class="btn btn-accent btn-lg">Save profile</button>
+        </form>
+      </div>
+
+      <!-- Products -->
+      <div id="panel-products" class="panel" hidden>
+        <section class="box">
+          <h2>Products and services</h2>
+          <p class="muted">Customers see this list on your profile. Prices help them decide to visit you.</p>
+          <form id="itemForm" class="item-form">
+            <div class="field">
+              <label for="itemName">Item or service</label>
+              <input id="itemName" name="itemName" required maxlength="60" placeholder="For example: Kota (quarter loaf)">
+            </div>
+            <div class="field field-small">
+              <label for="itemPrice">Price</label>
+              <input id="itemPrice" name="price" type="number" min="0" step="0.5" inputmode="decimal" placeholder="35">
+            </div>
+            <button type="submit" class="btn btn-primary">Add item</button>
+          </form>
+          <ul id="itemList" class="list"></ul>
+        </section>
+      </div>
+
+      <!-- Promotions / marketing -->
+      <div id="panel-promos" class="panel" hidden>
+        <div class="grid-2">
+          <section class="box">
+            <h2>Publish a promotion</h2>
+            <p class="muted">Shown on your listing to customers near you.</p>
+            <form id="promoForm" class="form">
+              <div class="field">
+                <label for="promoTitle">Title</label>
+                <input id="promoTitle" name="title" required maxlength="40" placeholder="For example: Weekday lunch combo">
+              </div>
+              <div class="field">
+                <label for="promoText">Details</label>
+                <textarea id="promoText" name="text" rows="3" required maxlength="140" placeholder="Any plate plus a cold drink for R55, 12:00 to 14:00"></textarea>
+              </div>
+              <div class="field">
+                <label for="promoEnd">Ends on (optional)</label>
+                <input id="promoEnd" name="expires" type="date">
+              </div>
+              <button type="submit" class="btn btn-accent">Publish promotion</button>
+            </form>
+          </section>
+
+          <div class="stack">
+            <section class="box">
+              <h2>Featured listing</h2>
+              <p class="muted">Show your business at the top of nearby results, marked as featured. Free while Corner Market is new.</p>
+              <label class="switch">
+                <input id="featuredToggle" type="checkbox">
+                <span>Feature my business</span>
+              </label>
+            </section>
+            <section class="box">
+              <h2>Your promotions</h2>
+              <ul id="promoList" class="list"></ul>
+            </section>
+          </div>
+        </div>
+      </div>
+
+      <!-- Advisor -->
+      <div id="panel-advisor" class="panel" hidden>
+        <section class="box chat">
+          <div class="chat-head">
+            <h2>Business advisor</h2>
+            <p class="muted small">Advice based on your own profile. It is a guide, not a replacement for local professional advice.</p>
+          </div>
+          <div id="chatLog" class="chat-log" aria-live="polite"></div>
+          <div id="chips" class="chips-row"></div>
+          <form id="chatForm" class="chat-form">
+            <label class="sr-only" for="chatInput">Ask the advisor</label>
+            <input id="chatInput" autocomplete="off" placeholder="Ask about customers, pricing, promotions…">
+            <button type="submit" class="btn btn-primary">Send</button>
+          </form>
+        </section>
+      </div>
+    </section>
+  </main>
+
+  <script src="js/common.js"></script>
+  <script src="js/advisor.js"></script>
+  <script src="js/business.js"></script>
+  <script src="js/network.js"></script>
+</body>
+</html>

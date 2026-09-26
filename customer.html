@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Find businesses near you · Hustle Hub</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body class="customer">
+  <header class="site-header">
+    <a class="brand" href="index.html"><span class="brand-mark" aria-hidden="true"></span>Hustle Hub</a>
+    <nav aria-label="Main">
+      <a href="index.html">Home</a>
+      <a href="business.html" class="btn btn-ghost btn-sm">I own a business</a>
+    </nav>
+  </header>
+
+  <main class="container">
+    <section class="finder">
+      <h1>What are you looking for today?</h1>
+
+      <div class="loc-box">
+        <p id="locStatus" class="loc-status" aria-live="polite">📍 Location not set.</p>
+        <div class="loc-actions">
+          <button id="btnLocate" type="button" class="btn btn-primary">Use my current location</button>
+          <form id="addrForm" class="inline-form">
+            <label class="sr-only" for="addrInput">Your suburb or address</label>
+            <input id="addrInput" type="text" placeholder="Or type your suburb or address" autocomplete="street-address">
+            <button type="submit" class="btn btn-ghost">Set location</button>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <section aria-labelledby="catHeading">
+      <h2 id="catHeading" class="sr-only">Categories</h2>
+      <div id="categories" class="tiles"></div>
+    </section>
+
+    <section class="toolbar" aria-label="Search options">
+      <div class="field">
+        <label for="search">Search by name or item</label>
+        <input id="search" type="search" placeholder="For example: braids, kota, screen">
+      </div>
+      <div class="field field-small">
+        <label for="radius">Within</label>
+        <select id="radius">
+          <option value="1">1 km</option>
+          <option value="2">2 km</option>
+          <option value="5" selected>5 km</option>
+          <option value="10">10 km</option>
+          <option value="25">25 km</option>
+          <option value="50">50 km</option>
+        </select>
+      </div>
+      <label class="check">
+        <input id="sampleToggle" type="checkbox" checked>
+        <span>Include sample listings</span>
+      </label>
+    </section>
+
+    <section aria-live="polite">
+      <div class="results-head">
+        <h2 id="resultsTitle">Businesses near you</h2>
+        <span id="resultsCount" class="muted"></span>
+      </div>
+      <div id="results" class="cards"></div>
+    </section>
+  </main>
+
+  <dialog id="detail" class="detail" aria-label="Business details"></dialog>
+
+  <script src="js/common.js"></script>
+  <script src="js/customer.js"></script>
+</body>
+</html>
