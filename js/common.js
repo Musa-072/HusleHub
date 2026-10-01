@@ -117,28 +117,52 @@ const CM = (() => {
   }
 
   const getPosition = () => new Promise((resolve, reject) => {
-    if (!navigator.geolocation) return reject(new Error('This browser cannot share your location.'));
+    if (!navigator.geolocation) {
+      return reject(new Error('Your browser does not support automatic location. Please search by suburb name.'));
+    }
+    
+    // Check if hosted insecurely (HTTP)
+    if (window.location.protocol !== 'https:' && window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+      return reject(new Error('Location requires a secure connection (HTTPS). Please search by suburb name instead.'));
+    }
+
     navigator.geolocation.getCurrentPosition(
       p => resolve({ lat: p.coords.latitude, lng: p.coords.longitude }),
-      e => reject(new Error(e.code === 1
-        ? 'Location permission was blocked. Allow it in your browser, or type your address instead.'
-        : 'We could not get your location. Type your address instead.')),
-      { enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 }
+      e => {
+        let msg = 'Could not retrieve your location.';
+        if (e.code === 1) {
+          msg = 'Location access was denied. Please allow location permissions in your browser or type your suburb.';
+        } else if (e.code === 2) {
+          msg = 'Location unavailable. Ensure GPS is turned on, or type your suburb.';
+        } else if (e.code === 3) {
+          msg = 'Location request timed out. Try again or type your suburb.';
+        }
+        reject(new Error(msg));
+      },
+      { enableHighAccuracy: false, timeout: 12000, maximumAge: 300000 }
     );
   });
 
   async function geocode(query) {
-    const url = `${CONFIG.geocoder}/search?format=jsonv2&limit=1&q=${encodeURIComponent(query)}`;
-    const r = await fetch(url);
-    if (!r.ok) throw new Error('The address lookup service is not responding. Try again in a moment.');
-    const data = await r.json();
-    if (!data.length) return null;
-    return { lat: +data[0].lat, lng: +data[0].lon, label: data[0].display_name };
+    try {
+      const url = `${CONFIG.geocoder}/search?format=jsonv2&limit=1&q=${encodeURIComponent(query)}`;
+      const r = await fetch(url, {
+        headers: { 'Accept-Language': 'en', 'User-Agent': 'HustleHubApp/1.0' }
+      });
+      if (!r.ok) throw new Error('Address lookup unavailable.');
+      const data = await r.json();
+      if (!data || !data.length) return null;
+      return { lat: +data[0].lat, lng: +data[0].lon, label: data[0].display_name };
+    } catch {
+      throw new Error('Address lookup failed. Try searching with a broader suburb or township name.');
+    }
   }
 
   async function reverseGeocode(lat, lng) {
     try {
-      const r = await fetch(`${CONFIG.geocoder}/reverse?format=jsonv2&zoom=16&lat=${lat}&lon=${lng}`);
+      const r = await fetch(`${CONFIG.geocoder}/reverse?format=jsonv2&zoom=16&lat=${lat}&lon=${lng}`, {
+        headers: { 'Accept-Language': 'en', 'User-Agent': 'HustleHubApp/1.0' }
+      });
       if (!r.ok) return null;
       const d = await r.json();
       return d.display_name || null;
@@ -264,4 +288,3 @@ const CM = (() => {
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', run);
   else run();
 })();
-
