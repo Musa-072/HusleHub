@@ -2,7 +2,12 @@
    Corner Market – business side
    Register, build a profile with an address, market yourself, get advice.
    ========================================================================== */
-(() => {
+document.addEventListener('DOMContentLoaded', () => {
+  if (typeof CM === 'undefined') {
+    console.error('Corner Market core library (CM) is not loaded.');
+    return;
+  }
+
   const { esc } = CM;
   const $ = (s, r = document) => r.querySelector(s);   const $$ = (s, r = document) => [...r.querySelectorAll(s)];
 
@@ -11,67 +16,89 @@
   let chat = [];              // { role: 'user' | 'bot', text }
 
   /* ---------- Helpers ---------- */
-  const fmt = text => esc(text)
-    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')     .replace(/\n/g, '<br>');    const newId = () => 'b_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);    function refresh() {     biz = CM.getBusinesses().find(b => b.id === biz.id) \vert{}\vert{} biz;   }    /* ---------- Category selects ---------- */   $$('select[data-categories]').forEach(sel => {
-    sel.innerHTML = CM.CATEGORIES.map(c => `<option value="${c.id}">${esc(c.label)}</option>`).join('');
+  const fmt = text => esc(text || '')
+    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')     .replace(/\n/g, '<br>');    const newId = () => 'b_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);    /* ---------- Category selects ---------- */   $$('select[data-categories]').forEach(sel => {
+    if (Array.isArray(CM.CATEGORIES)) {
+      sel.innerHTML = CM.CATEGORIES.map(c => `<option value="${c.id}">${esc(c.label)}</option>`).join('');
+    }
   });
 
   /* ---------- Auth ---------- */
   function showAuth() {
-    $('#authView').hidden = false;
-    $('#dashView').hidden = true;
+    const authView = $('#authView');
+    const dashView = $('#dashView');
+    if (authView) authView.hidden = false;
+    if (dashView) dashView.hidden = true;
   }
 
   function showDash() {
-    $('#authView').hidden = true;
-    $('#dashView').hidden = false;
-    $('#dashTitle').textContent = biz.name;     fillProfileForm();     renderAll();   }    $$('.auth-tab').forEach(btn => btn.addEventListener('click', () => {$$('.auth-tab').forEach(b => b.setAttribute('aria-selected', String(b === btn)));$('#registerForm').hidden = btn.dataset.form !== 'register';
-    $('#loginForm').hidden = btn.dataset.form !== 'login';
+    const authView = $('#authView');
+    const dashView = $('#dashView');
+    const dashTitle = $('#dashTitle');
+    if (authView) authView.hidden = true;
+    if (dashView) dashView.hidden = false;
+    if (dashTitle && biz) dashTitle.textContent = biz.name;
+    fillProfileForm();
+    renderAll();
+  }
+
+  $$('.auth-tab').forEach(btn => btn.addEventListener('click', () => {$$
+('.auth-tab').forEach(b => b.setAttribute('aria-selected', String(b === btn)));
+    const regForm = $('#registerForm');
+    const loginForm = $('#loginForm');
+    if (regForm) regForm.hidden = btn.dataset.form !== 'register';
+    if (loginForm) loginForm.hidden = btn.dataset.form !== 'login';
   }));
 
-  $('#registerForm').addEventListener('submit', async e => {
-    e.preventDefault();
-    const f = new FormData(e.target);
-    const email = f.get('email').trim().toLowerCase();
-    const pw = f.get('password');
-    if (pw.length < 6) return CM.toast('Choose a password with at least 6 characters.', 'error');
-    const list = CM.getBusinesses();
-    if (list.some(b => b.email === email)) return CM.toast('That email already has an account. Log in instead.', 'error');
+  const regForm = $('#registerForm');
+  if (regForm) {
+    regForm.addEventListener('submit', async e => {
+      e.preventDefault();
+      const f = new FormData(e.target);
+      const email = (f.get('email') || '').trim().toLowerCase();
+      const pw = f.get('password') || '';
+      if (pw.length < 6) return CM.toast('Choose a password with at least 6 characters.', 'error');
+      const list = CM.getBusinesses() || [];
+      if (list.some(b => b.email === email)) return CM.toast('That email already has an account. Log in instead.', 'error');
 
-    const b = {
-      id: newId(), ownerName: f.get('ownerName').trim(), email, passHash: await CM.hashText(pw),
-      name: f.get('name').trim(), category: f.get('category'),
-      description: '', phone: '', whatsapp: '', hours: '', image: '',
-      address: { street: '', suburb: '', city: '' }, lat: null, lng: null,
-      offerings: [], promotions: [], featured: false,
-      stats: { views: 0, contacts: 0 }, createdAt: new Date().toISOString()
-    };
-    list.push(b);
-    if (!CM.saveBusinesses(list)) return;
-    CM.store.set(CM.KEYS.session, b.id);
-    biz = b;
-    e.target.reset();
-    showDash();
-    switchTab('profile');
-    CM.toast('Account created. Add your address so customers nearby can find you.', 'success');
-  });
+      const b = {
+        id: newId(), ownerName: (f.get('ownerName') || '').trim(), email, passHash: await CM.hashText(pw),
+        name: (f.get('name') || '').trim(), category: f.get('category'),
+        description: '', phone: '', whatsapp: '', hours: '', image: '',
+        address: { street: '', suburb: '', city: '' }, lat: null, lng: null,
+        offerings: [], promotions: [], featured: false,
+        stats: { views: 0, contacts: 0 }, createdAt: new Date().toISOString()
+      };
+      list.push(b);
+      if (!CM.saveBusinesses(list)) return;
+      CM.store.set(CM.KEYS.session, b.id);
+      biz = b;
+      e.target.reset();
+      showDash();
+      switchTab('profile');
+      CM.toast('Account created. Add your address so customers nearby can find you.', 'success');
+    });
+  }
 
-  $('#loginForm').addEventListener('submit', async e => {
-    e.preventDefault();
-    const f = new FormData(e.target);
-    const email = f.get('email').trim().toLowerCase();
-    const found = CM.getBusinesses().find(b => b.email === email);
-    if (!found || found.passHash !== await CM.hashText(f.get('password'))) {
-      return CM.toast('Email or password is not right. Check both and try again.', 'error');
-    }
-    CM.store.set(CM.KEYS.session, found.id);
-    biz = found;
-    e.target.reset();
-    showDash();
-    switchTab('overview');
-  });
+  const loginForm = $('#loginForm');
+  if (loginForm) {
+    loginForm.addEventListener('submit', async e => {
+      e.preventDefault();
+      const f = new FormData(e.target);
+      const email = (f.get('email') || '').trim().toLowerCase();
+      const found = (CM.getBusinesses() || []).find(b => b.email === email);
+      if (!found || found.passHash !== await CM.hashText(f.get('password') || '')) {
+        return CM.toast('Email or password is not right. Check both and try again.', 'error');
+      }
+      CM.store.set(CM.KEYS.session, found.id);
+      biz = found;
+      e.target.reset();
+      showDash();
+      switchTab('overview');
+    });
+  }
 
-  $('#btnLogout').addEventListener('click', () => {     CM.store.remove(CM.KEYS.session);     biz = null;     chat = [];     showAuth();   });    /* ---------- Tabs ---------- */   function switchTab(name) {     $$('.tab').forEach(t => t.setAttribute('aria-selected', String(t.dataset.tab === name)));
+  const btnLogout = $('#btnLogout');   if (btnLogout) {     btnLogout.addEventListener('click', () => {       CM.store.remove(CM.KEYS.session);       biz = null;       chat = [];       showAuth();     });   }    /* ---------- Tabs ---------- */   function switchTab(name) {     $$('.tab').forEach(t => t.setAttribute('aria-selected', String(t.dataset.tab === name)));
     $$('.panel').forEach(p => { p.hidden = p.id !== 'panel-' + name; });     if (name === 'overview') renderOverview();     if (name === 'advisor') openAdvisor();     window.scrollTo({ top: 0 });   }   $$
 ('.tab').forEach(t => t.addEventListener('click', () => switchTab(t.dataset.tab)));
   document.addEventListener('click', e => {
@@ -99,13 +126,13 @@
     if (!box) return;
     box.innerHTML = draft.image
       ? `<img src="${esc(draft.image)}" alt="Your business photo">`
-      : `<span>${esc(CM.initials(biz.name))}</span>`;
+      : `<span>${esc(CM.initials(biz ? biz.name : ''))}</span>`;
     const btnRem = $('#btnRemovePhoto');
     if (btnRem) btnRem.hidden = !draft.image;
   }
 
   function fillProfileForm() {
-    if (!pf) return;
+    if (!pf || !biz) return;
     pf.bizName.value = biz.name || '';
     pf.category.value = biz.category || 'other';
     pf.description.value = biz.description || '';
@@ -139,6 +166,7 @@
   }
 
   async function locateByAddress() {
+    if (!pf) return false;
     const street = pf.street.value.trim();
     const suburb = pf.suburb.value.trim();
     const city = pf.city.value.trim();
@@ -148,7 +176,6 @@
       return false;
     }
 
-    // Try full address query first
     const fullQuery = [street, suburb, city, 'South Africa'].filter(Boolean).join(', ');
     let res = null;
     
@@ -158,7 +185,6 @@
       res = null;
     }
 
-    // Fallback attempt with broader parameters (suburb + city or just city)
     if (!res && (street || suburb)) {
       const fallbackQuery = [suburb || street, city, 'South Africa'].filter(Boolean).join(', ');
       try {
@@ -250,7 +276,7 @@
       if (btn) btn.disabled = true;
       try {
         if ((draft.lat == null || draft.stale) && (pf.suburb.value.trim() || pf.city.value.trim())) {
-          try { await locateByAddress(); } catch (err) { /* handled in locateByAddress */ }
+          try { await locateByAddress(); } catch (err) { /* handled */ }
         }
         const updated = CM.updateBusiness(biz.id, b => ({
           ...b, name, category: pf.category.value, description: pf.description.value.trim(),
@@ -272,7 +298,7 @@
   /* ---------- Products & services ---------- */
   function renderItems() {
     const list = $('#itemList');
-    if (!list) return;
+    if (!list || !biz) return;
     if (!biz.offerings || !biz.offerings.length) {
       list.innerHTML = '<li class="empty-line">Nothing listed yet. Add your first item above.</li>';
       return;
@@ -288,7 +314,7 @@
     itemForm.addEventListener('submit', e => {
       e.preventDefault();
       const f = new FormData(e.target);
-      const name = f.get('itemName').trim();
+      const name = (f.get('itemName') || '').trim();
       if (!name) return;
       const price = f.get('price') === '' ? '' : Number(f.get('price'));
       const updated = CM.updateBusiness(biz.id, b => ({ ...b, offerings: [...(b.offerings || []), { name, price }] }));
@@ -314,7 +340,7 @@
   /* ---------- Promotions & featured ---------- */
   function renderPromos() {
     const list = $('#promoList');
-    if (!list) return;
+    if (!list || !biz) return;
     if (!biz.promotions || !biz.promotions.length) {
       list.innerHTML = '<li class="empty-line">No promotions yet. Publish one and it will appear on your listing.</li>';
     } else {
@@ -335,7 +361,7 @@
     promoForm.addEventListener('submit', e => {
       e.preventDefault();
       const f = new FormData(e.target);
-      const title = f.get('title').trim(), text = f.get('text').trim();
+      const title = (f.get('title') || '').trim(), text = (f.get('text') || '').trim();
       if (!title || !text) return CM.toast('Add a title and a short description.', 'error');
       const promo = { id: 'p_' + Date.now().toString(36), title, text, expires: f.get('expires') || '' };
       const updated = CM.updateBusiness(biz.id, b => ({ ...b, promotions: [promo, ...(b.promotions || [])] }));
@@ -368,13 +394,14 @@
 
   /* ---------- Overview & marketing kit ---------- */
   function shareMessage() {
+    if (!biz) return '';
     const link = new URL('customer.html', location.href).href;
     const line = (biz.description || '').split(/(?<=[.!?])\s/)[0] || `We are a ${CM.catById(biz.category).label.toLowerCase()} business near you.`;
     return `Hi! ${biz.name} is now on Corner Market. ${line}\nFind us near you: ${link}`;
   }
 
   function renderOverview() {
-    if (typeof Advisor === 'undefined') return;
+    if (!biz || typeof Advisor === 'undefined') return;
     const s = Advisor.strength(biz);
     const statViews = $('#statViews');
     const statContacts = $('#statContacts');
@@ -432,7 +459,7 @@
   }
 
   function openAdvisor() {
-    if (typeof Advisor === 'undefined') return;
+    if (typeof Advisor === 'undefined' || !biz) return;
     if (!chat.length) chat.push({ role: 'bot', text: Advisor.greeting(biz) });
     const chips = $('#chips');
     if (chips) chips.innerHTML = Advisor.chips.map(c => `<button type="button" class="chip-btn">${esc(c)}</button>`).join('');
@@ -442,8 +469,8 @@
   }
 
   async function send(text) {
-    text = text.trim();
-    if (!text) return;
+    text = (text || '').trim();
+    if (!text || typeof Advisor === 'undefined') return;
     chat.push({ role: 'user', text });
     renderChat(true);
     const chatInput = $('#chatInput');
@@ -474,12 +501,12 @@
     renderPromos();
     renderOverview();
     const btnPreview = $('#btnPreview');
-    if (btnPreview) btnPreview.hidden = biz.lat == null;
+    if (btnPreview && biz) btnPreview.hidden = biz.lat == null;
   }
 
   const sessionId = CM.store.get(CM.KEYS.session, null);
-  const existing = sessionId && CM.getBusinesses().find(b => b.id === sessionId);
+  const existing = sessionId && (CM.getBusinesses() || []).find(b => b.id === sessionId);
 
   if (existing) { biz = existing; showDash(); switchTab('overview'); }
   else showAuth();
-})();
+});
