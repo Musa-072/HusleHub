@@ -1,8 +1,8 @@
 /* ==========================================================================
-   Meta AI Style Chat Interface - Corner Market (Fixed Specificity)
+   Meta AI Style Chat Interface - Corner Market (Polished & Fully Isolated)
    ========================================================================== */
 
-/* Respect the hidden attribute so switching tabs works properly */
+/* Respect the hidden attribute for tab switching */
 #panel-advisor[hidden] {
   display: none !important;
 }
@@ -11,23 +11,61 @@
   display: flex;
   flex-direction: column;
   max-width: 800px;
-  height: 75vh;
-  min-height: 500px;
+  height: 78vh;
+  min-height: 520px;
   margin: 0 auto;
   background: var(--surface);
   border: 2px solid var(--black);
-  border-radius: 16px;
-  box-shadow: 0 8px 30px rgba(1, 93, 252, 0.08);
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(1, 93, 252, 0.1);
   padding: 1.25rem;
   overflow: hidden;
+  position: relative;
 }
 
-#panel-advisor h2 {
-  font-size: 1.2rem;
+/* Header Area with Meta AI Logo Badge */
+#panel-advisor .advisor-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--line);
+  margin-bottom: 0.75rem;
+}
+
+#panel-advisor .advisor-header h2 {
+  font-size: 1.25rem;
   font-weight: 800;
   color: var(--black);
-  margin-bottom: 0.75rem;
-  text-align: center;
+  margin: 0;
+}
+
+.meta-logo-ring {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: conic-gradient(
+    from 180deg at 50% 50%,
+    #0064e0 0deg,
+    #0084ff 90deg,
+    #00c6ff 180deg,
+    #0084ff 270deg,
+    #0064e0 360deg
+  );
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 12px rgba(0, 132, 255, 0.35);
+  flex-shrink: 0;
+}
+
+.meta-logo-ring::after {
+  content: '';
+  width: 14px;
+  height: 14px;
+  background: var(--surface);
+  border-radius: 50%;
 }
 
 /* Quick Prompt Chips */
@@ -36,7 +74,7 @@
   display: flex;
   gap: 8px;
   overflow-x: auto;
-  padding-bottom: 10px;
+  padding: 4px 2px 10px 2px;
   margin-bottom: 8px;
   scrollbar-width: thin;
 }
@@ -60,17 +98,18 @@
   font-weight: 600;
   white-space: nowrap;
   cursor: pointer;
-  transition: background-color 0.15s ease, border-color 0.15s ease;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .chip-btn:hover {
   background-color: var(--blue-tint);
   border-color: var(--blue);
   color: var(--blue-dark);
+  transform: translateY(-1px);
 }
 
 .chip-btn:active {
-  transform: scale(0.97);
+  transform: scale(0.96);
 }
 
 /* Chat Log Viewport */
@@ -78,13 +117,13 @@
 .chat-log {
   flex: 1;
   overflow-y: auto;
-  padding: 12px 8px;
+  padding: 16px 12px;
   display: flex;
   flex-direction: column;
   gap: 16px;
   scrollbar-width: thin;
   background: #fafcff;
-  border-radius: 12px;
+  border-radius: 14px;
   border: 1px solid var(--line);
 }
 
@@ -111,9 +150,19 @@
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #02c5ff 0%, #0595f8 45%, #015dfc 100%);
+  background: conic-gradient(
+    from 180deg at 50% 50%,
+    #0064e0 0deg,
+    #0084ff 90deg,
+    #00c6ff 180deg,
+    #0084ff 270deg,
+    #0064e0 360deg
+  );
+  box-shadow: 0 0 10px rgba(0, 132, 255, 0.3);
   flex-shrink: 0;
-  box-shadow: 0 2px 8px rgba(1, 93, 252, 0.3);
+  position: relative;
+  mask: radial-gradient(circle 10px at center, transparent 99%, #000 100%);
+  -webkit-mask: radial-gradient(circle 10px at center, transparent 99%, #000 100%);
 }
 
 /* Message Bubbles */
@@ -129,7 +178,7 @@
   background: var(--grad);
   color: #ffffff;
   border-bottom-right-radius: 4px;
-  box-shadow: 0 2px 6px rgba(1, 93, 252, 0.2);
+  box-shadow: 0 3px 10px rgba(1, 93, 252, 0.2);
 }
 
 .msg.bot .bubble {
@@ -169,7 +218,7 @@
   40% { transform: scale(1); opacity: 1; }
 }
 
-/* Bottom Input Bar */
+/* Input Form Bar */
 #panel-advisor .chat-form,
 .chat-form {
   display: flex;
@@ -180,12 +229,12 @@
   border-radius: 28px;
   padding: 4px 6px 4px 16px;
   margin-top: 12px;
-  transition: border-color 0.15s ease;
+  transition: all 0.2s ease;
 }
 
 .chat-form:focus-within {
   border-color: var(--blue);
-  box-shadow: 0 0 0 3px rgba(5, 149, 248, 0.2);
+  box-shadow: 0 0 0 4px rgba(5, 149, 248, 0.15);
 }
 
 .chat-form input[type="text"] {
@@ -196,7 +245,7 @@
   outline: none !important;
   box-shadow: none !important;
   color: var(--ink);
-  padding: 8px 0;
+  padding: 10px 0;
 }
 
 .chat-form input[type="text"]::placeholder {
@@ -213,7 +262,7 @@
   font-size: 0.9rem;
   font-weight: 700;
   cursor: pointer;
-  transition: opacity 0.2s ease, transform 0.1s ease;
+  transition: transform 0.1s ease, opacity 0.2s ease;
 }
 
 .chat-form .btn.primary:hover,
