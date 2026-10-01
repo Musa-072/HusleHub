@@ -1,4 +1,22 @@
-/* Container Box Fix */
+/* ==========================================================================
+   Base Styles & Layout
+   ========================================================================== */
+:root {
+  --surface: #ffffff;
+  --wall: #f0f2f5;
+  --ink: #050505;
+  --muted: #65676b;
+  --line: #e4e6eb;
+  --blue: #0084ff;
+  --blue-dark: #0064e0;
+  --black: #000000;
+  --grad: linear-gradient(135deg, #0064e0, #0084ff);
+}
+
+/* ==========================================================================
+   Meta AI Advisor Panel - Contained Box Layout
+   ========================================================================== */
+
 #panel-advisor[hidden] {
   display: none !important;
 }
@@ -7,37 +25,67 @@
   display: flex;
   flex-direction: column;
   max-width: 760px;
-  height: 600px; /* Fixed height so it stays contained */
+  height: 600px; /* Fixed height to keep it locked in the box */
   max-height: 80vh;
   margin: 0 auto;
-  background: #ffffff;
-  border: 1px solid #e4e6eb;
+  background: var(--surface);
+  border: 1px solid var(--line);
   border-radius: 20px;
   box-shadow: 0 12px 28px rgba(0, 0, 0, 0.05);
   padding: 16px;
   box-sizing: border-box;
-  overflow: hidden !important; /* Prevents outer box overflow */
+  overflow: hidden !important; /* Prevents container overflow */
   position: relative;
 }
 
-/* Header Area */
+/* Header Section */
 .advisor-header {
-  flex-shrink: 0; /* Keeps header fixed at top */
+  flex-shrink: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   gap: 4px;
   padding-bottom: 10px;
-  border-bottom: 1px solid #f0f2f5;
+  border-bottom: 1px solid var(--line);
 }
 
-/* Chat Log Viewport - Handles Scroll Inside Box */
+.advisor-header .meta-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.advisor-header h2 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--ink);
+  margin: 0;
+}
+
+.advisor-subtitle {
+  font-size: 0.82rem;
+  color: var(--muted);
+  margin: 0;
+  text-align: center;
+}
+
+/* Meta AI Gradient Ring Logo */
+.meta-logo-ring {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: conic-gradient(from 180deg at 50% 50%, #0064e0, #0084ff, #00c6ff, #0084ff, #0064e0);
+  box-shadow: 0 0 8px rgba(0, 132, 255, 0.4);
+  flex-shrink: 0;
+}
+
+/* Chat Log Container (Scrolls inside the box) */
 #panel-advisor .chat-log,
 .chat-log {
   flex: 1 1 auto;
-  min-height: 0; /* Critical for Flexbox nested scrolling */
-  overflow-y: auto !important; /* Internal scroll only */
+  min-height: 0; /* Prevents overflow pushing the box height */
+  overflow-y: auto !important;
   padding: 12px 8px;
   display: flex;
   flex-direction: column;
@@ -45,7 +93,7 @@
   scrollbar-width: thin;
 }
 
-/* Message Alignment */
+/* Chat Message Formatting */
 .msg {
   display: flex !important;
   align-items: flex-start !important;
@@ -62,7 +110,7 @@
   align-self: flex-start;
 }
 
-/* Meta AI Dynamic Gradient Ring Icon */
+/* Bot Meta Avatar Ring */
 .msg.bot::before {
   content: '';
   width: 28px;
@@ -84,18 +132,22 @@
 }
 
 .msg.user .bubble {
-  background: #0084ff;
+  background: var(--blue);
   color: #ffffff;
   border-top-right-radius: 4px;
 }
 
 .msg.bot .bubble {
-  background-color: #f0f2f5;
-  color: #050505;
+  background-color: var(--wall);
+  color: var(--ink);
   border-top-left-radius: 4px;
 }
 
-/* Fixed Bottom Section (Chips + Input) */
+.msg .bubble strong {
+  font-weight: 700;
+}
+
+/* Chips Bar & Input Form */
 .chips-container {
   flex-shrink: 0;
   display: flex;
@@ -105,13 +157,59 @@
   scrollbar-width: none;
 }
 
+.chip-btn {
+  background: var(--wall);
+  color: var(--ink);
+  border: none;
+  border-radius: 18px;
+  padding: 6px 14px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.chip-btn:hover {
+  background-color: var(--line);
+}
+
 .chat-form {
   flex-shrink: 0;
   display: flex;
   align-items: center;
   gap: 8px;
-  background-color: #f0f2f5;
+  background-color: var(--wall);
   border-radius: 24px;
   padding: 4px 6px 4px 16px;
   margin-top: 4px;
+}
+
+.chat-form input[type="text"] {
+  flex: 1;
+  border: none !important;
+  background: transparent !important;
+  font-size: 0.95rem;
+  outline: none !important;
+  color: var(--ink);
+  padding: 6px 0;
+}
+
+.chat-form input[type="text"]::placeholder {
+  color: var(--muted);
+}
+
+.chat-form .btn.primary {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: var(--blue);
+  color: #ffffff;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  cursor: pointer;
+  flex-shrink: 0;
 }
