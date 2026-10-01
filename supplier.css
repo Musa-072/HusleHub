@@ -1,0 +1,48 @@
+/* ==========================================================================
+   B2B Supplier Finder Styles
+   ========================================================================== */
+
+/* Supplier Page Tabs (Adapted from business dashboard) */
+.supplier-tabs { 
+  display: flex; gap: 0.25rem; overflow-x: auto; 
+  border-bottom: 2px solid var(--line); 
+  margin: 2rem 0 1.5rem 0; 
+}
+.supplier-tabs .tab { 
+  padding: 0.75rem 1.25rem; background: transparent; border: 0; 
+  border-bottom: 5px solid transparent; margin-bottom: -2px; 
+  font: 700 1.05rem var(--font-body); color: var(--muted); cursor: pointer; 
+}
+.supplier-tabs .tab:hover { color: var(--black); }
+.supplier-tabs .tab[aria-selected='true'] { 
+  color: var(--black); border-bottom-color: var(--blue); 
+}
+
+/* Map & Popup Customization */
+#map {
+  box-shadow: var(--shadow-sm);
+}
+
+.leaflet-popup-content-wrapper {
+  border-radius: var(--radius-sm);
+  border: 2px solid var(--black);
+  font-family: var(--font-body);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+.leaflet-popup-content {
+  font-size: 0.95rem;
+  color: var(--ink);
+  line-height: 1.4;
+}
+.leaflet-popup-content strong {
+  font-family: var(--font-head);
+  font-size: 1.15rem;
+  color: var(--blue-dark);
+  display: block;
+  margin-bottom: 0.25rem;
+}
+.leaflet-container a.leaflet-popup-close-button {
+  color: var(--black);
+  font-weight: bold;
+  padding: 4px;
+}
